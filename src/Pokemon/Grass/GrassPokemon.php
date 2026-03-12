@@ -16,6 +16,11 @@ use Pokemon\Pokemon\Pokemon;
 abstract class GrassPokemon extends Pokemon
 {
     /**
+     * @var int The sharpness of the Pokémon's leaves (1–10).
+     */
+    protected int $leafSharpness;
+
+    /**
      * GrassPokemon constructor.
      *
      * @param string $name         The Pokémon's name.
@@ -24,12 +29,13 @@ abstract class GrassPokemon extends Pokemon
      * @param int    $leafSharpness The sharpness of the Pokémon's leaves (1–10).
      */
     public function __construct(
-        string          $name,
-        int             $level,
-        int             $hp,
-        protected int   $leafSharpness
+        string $name,
+        int    $level,
+        int    $hp,
+        int    $leafSharpness
     ) {
         parent::__construct($name, $level, $hp, 'Grass');
+        $this->leafSharpness = $leafSharpness;
     }
 
     /**

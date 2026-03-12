@@ -16,6 +16,26 @@ use Pokemon\Interfaces\Battlable;
 abstract class Pokemon implements Battlable
 {
     /**
+     * @var string The Pokémon's name.
+     */
+    protected string $name;
+
+    /**
+     * @var int The Pokémon's current level (1–100).
+     */
+    protected int $level;
+
+    /**
+     * @var int The Pokémon's hit points.
+     */
+    protected int $hp;
+
+    /**
+     * @var string The elemental type (e.g. Fire, Water, Grass).
+     */
+    protected string $type;
+
+    /**
      * Pokemon constructor.
      *
      * @param string $name      The Pokémon's name.
@@ -24,11 +44,16 @@ abstract class Pokemon implements Battlable
      * @param string $type      The elemental type (e.g. Fire, Water, Grass).
      */
     public function __construct(
-        protected string $name,
-        protected int    $level,
-        protected int    $hp,
-        protected string $type
-    ) {}
+        string $name,
+        int    $level,
+        int    $hp,
+        string $type
+    ) {
+        $this->name = $name;
+        $this->level = $level;
+        $this->hp = $hp;
+        $this->type = $type;
+    }
 
     // -------------------------------------------------------------------------
     // Getters

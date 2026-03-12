@@ -16,6 +16,11 @@ use Pokemon\Pokemon\Pokemon;
 abstract class FirePokemon extends Pokemon
 {
     /**
+     * @var int The intensity of the Pokémon's flame (1–10).
+     */
+    protected int $flamePower;
+
+    /**
      * FirePokemon constructor.
      *
      * @param string $name        The Pokémon's name.
@@ -24,12 +29,13 @@ abstract class FirePokemon extends Pokemon
      * @param int    $flamePower  The intensity of the Pokémon's flame (1–10).
      */
     public function __construct(
-        string          $name,
-        int             $level,
-        int             $hp,
-        protected int   $flamePower
+        string $name,
+        int    $level,
+        int    $hp,
+        int    $flamePower
     ) {
         parent::__construct($name, $level, $hp, 'Fire');
+        $this->flamePower = $flamePower;
     }
 
     /**

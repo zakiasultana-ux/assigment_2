@@ -19,6 +19,11 @@ class Venusaur extends GrassPokemon
     use Evolvable;
 
     /**
+     * @var bool Whether Venusaur's back flower is in bloom.
+     */
+    private bool $flowerBloomed = true;
+
+    /**
      * Venusaur constructor.
      *
      * @param int  $level          The Pokémon's current level.
@@ -27,12 +32,13 @@ class Venusaur extends GrassPokemon
      * @param bool $flowerBloomed  Whether Venusaur's back flower is in bloom.
      */
     public function __construct(
-        int             $level,
-        int             $hp,
-        int             $leafSharpness,
-        private bool    $flowerBloomed = true
+        int  $level,
+        int  $hp,
+        int  $leafSharpness,
+        bool $flowerBloomed = true
     ) {
         parent::__construct('Venusaur', $level, $hp, $leafSharpness);
+        $this->flowerBloomed = $flowerBloomed;
     }
 
     /**

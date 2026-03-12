@@ -19,6 +19,11 @@ class Charizard extends FirePokemon
     use Evolvable;
 
     /**
+     * @var int Charizard's wingspan in metres.
+     */
+    private int $wingspan;
+
+    /**
      * Charizard constructor.
      *
      * @param int $level      The Pokémon's current level.
@@ -27,12 +32,13 @@ class Charizard extends FirePokemon
      * @param int $wingspan   Charizard's wingspan in metres.
      */
     public function __construct(
-        int             $level,
-        int             $hp,
-        int             $flamePower,
-        private int     $wingspan
+        int $level,
+        int $hp,
+        int $flamePower,
+        int $wingspan
     ) {
         parent::__construct('Charizard', $level, $hp, $flamePower);
+        $this->wingspan = $wingspan;
     }
 
     /**
