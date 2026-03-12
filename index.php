@@ -7,6 +7,7 @@ declare(strict_types=1);
  *
  * Entry point for the Pokémon class hierarchy demonstration.
  * Uses spl_autoload_register to automatically load classes from the src/ directory.
+ * Outputs a styled HTML page for clean browser display.
  *
  * Hierarchy overview:
  *   Pokemon (abstract, root)
@@ -19,25 +20,19 @@ declare(strict_types=1);
  */
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Autoloader
+// Autoloader  (PSR-4, works on Windows and Unix)
 // ─────────────────────────────────────────────────────────────────────────────
 
 spl_autoload_register(function (string $class): void {
-    /*
-     * Map the root namespace "Pokemon" to the src/ directory.
-     * e.g.  Pokemon\Pokemon\Charizard  →  src/Pokemon/Charizard.php
-     *       Pokemon\Traits\Evolvable   →  src/Traits/Evolvable.php
-     */
-    $prefix   = 'Pokemon\\';
-    $baseDir  = __DIR__ . '/src/';
+    $prefix  = 'Pokemon\\';
+    $baseDir = __DIR__ . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR;
 
-    // Check whether the class uses our namespace prefix.
     if (strncmp($prefix, $class, strlen($prefix)) !== 0) {
-        return; // Not our namespace – let another autoloader handle it.
+        return;
     }
 
     $relativeClass = substr($class, strlen($prefix));
-    $file          = $baseDir . str_replace('\\', '/', $relativeClass) . '.php';
+    $file          = $baseDir . str_replace('\\', DIRECTORY_SEPARATOR, $relativeClass) . '.php';
 
     if (file_exists($file)) {
         require $file;
@@ -54,24 +49,48 @@ use Pokemon\Pokemon\Water\Blastoise;
 use Pokemon\Pokemon\Grass\Venusaur;
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Helper – pretty section header
+// HTML helper functions
 // ─────────────────────────────────────────────────────────────────────────────
 
 /**
- * Prints a formatted section divider with a title.
+ * Renders an opening Pokemon card with a coloured header.
  *
- * @param string $title The section heading text.
+ * @param string $title     The card heading (Pokemon name + type chain).
+ * @param string $colorClass CSS class controlling the header colour.
  * @return void
  */
-function section(string $title): void
+function cardOpen(string $title, string $colorClass): void
 {
-    echo PHP_EOL . str_repeat('=', 60) . PHP_EOL;
-    echo "  {$title}" . PHP_EOL;
-    echo str_repeat('=', 60) . PHP_EOL;
+    echo "<div class=\"card\">";
+    echo "<div class=\"card-header {$colorClass}\">{$title}</div>";
+    echo "<ul class=\"card-body\">";
+}
+
+/**
+ * Renders a single list item inside a card.
+ *
+ * @param string $text     The line of output to display.
+ * @param string $cssClass Optional extra CSS class for the li element.
+ * @return void
+ */
+function cardLine(string $text, string $cssClass = ''): void
+{
+    $cls = $cssClass ? " class=\"{$cssClass}\"" : '';
+    echo "<li{$cls}>" . htmlspecialchars($text, ENT_QUOTES, 'UTF-8') . "</li>";
+}
+
+/**
+ * Closes an open Pokemon card.
+ *
+ * @return void
+ */
+function cardClose(): void
+{
+    echo "</ul></div>";
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Instantiate Pokémon
+// Instantiate Pokemon
 // ─────────────────────────────────────────────────────────────────────────────
 
 //                        level  hp   flamePower  wingspan
@@ -86,86 +105,87 @@ $blastoise = new Blastoise(36,   260, 8,             2);
 //                         level  hp   leafSharpness  flowerBloomed
 $venusaur  = new Venusaur( 36,   240, 7,             true);
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Demo – Charizard
-// ─────────────────────────────────────────────────────────────────────────────
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokemon Class Hierarchy Demo</title>
+    <!-- <link rel="stylesheet" href="css/style.css"> -->
+</head>
+<body>
 
-section('🔥 CHARIZARD (FirePokemon → Pokemon)');
+<h1>Pokemon Class Hierarchy Demo</h1>
+<p class="subtitle">PHP OOP &nbsp;&middot;&nbsp; Abstract Classes &nbsp;&middot;&nbsp; Interface &nbsp;&middot;&nbsp; Trait &nbsp;&middot;&nbsp; spl_autoload_register</p>
 
-echo $charizard->stats()                    . PHP_EOL;
-echo $charizard->battleCry()                . PHP_EOL;
-echo $charizard->attack('Blastoise')        . PHP_EOL;
-echo $charizard->useSignatureMove()         . PHP_EOL;
-echo $charizard->absorbHeat()               . PHP_EOL;
-echo $charizard->rest()                     . PHP_EOL;
+<div class="section-label">Pokemon Showcase</div>
+<div class="grid">
 
-// Evolution via Evolvable trait
-echo $charizard->evolve('Charmeleon')       . PHP_EOL;
-echo $charizard->evolutionStatus()          . PHP_EOL;
+<?php
+cardOpen('Charizard &nbsp;<small>FirePokemon &rarr; Pokemon</small>', 'fire');
+cardLine($charizard->stats(),                'line-stats');
+cardLine($charizard->battleCry(),            'line-cry');
+cardLine($charizard->attack('Blastoise'),    'line-attack');
+cardLine($charizard->useSignatureMove(),     'line-move');
+cardLine($charizard->absorbHeat(),           'line-special');
+cardLine($charizard->rest(),                 'line-special');
+cardLine($charizard->evolve('Charmeleon'),   'line-evolve');
+cardLine($charizard->evolutionStatus(),      'line-status');
+cardClose();
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Demo – Magmar
-// ─────────────────────────────────────────────────────────────────────────────
+cardOpen('Magmar &nbsp;<small>FirePokemon &rarr; Pokemon</small>', 'fire');
+cardLine($magmar->stats(),                   'line-stats');
+cardLine($magmar->battleCry(),               'line-cry');
+cardLine($magmar->attack('Venusaur'),        'line-attack');
+cardLine($magmar->useSignatureMove(),        'line-move');
+cardLine($magmar->overheat(),                'line-special');
+cardLine('Overheated? ' . ($magmar->isOverheated() ? 'Yes' : 'No'), 'line-special');
+cardLine($magmar->evolve('Magby'),           'line-evolve');
+cardLine($magmar->evolutionStatus(),         'line-status');
+cardClose();
 
-section('🌋 MAGMAR (FirePokemon → Pokemon)');
+cardOpen('Blastoise &nbsp;<small>WaterPokemon &rarr; Pokemon</small>', 'water');
+cardLine($blastoise->stats(),                'line-stats');
+cardLine($blastoise->battleCry(),            'line-cry');
+cardLine($blastoise->attack('Charizard'),    'line-attack');
+cardLine($blastoise->useSignatureMove(),     'line-move');
+cardLine($blastoise->dive(),                 'line-special');
+cardLine($blastoise->rest(),                 'line-special');
+cardLine($blastoise->evolve('Wartortle'),    'line-evolve');
+cardLine($blastoise->evolutionStatus(),      'line-status');
+cardLine('Cannons: ' . $blastoise->getCannonCount(), 'line-status');
+cardClose();
 
-echo $magmar->stats()                       . PHP_EOL;
-echo $magmar->battleCry()                   . PHP_EOL;
-echo $magmar->attack('Venusaur')            . PHP_EOL;
-echo $magmar->useSignatureMove()            . PHP_EOL;
-echo $magmar->overheat()                    . PHP_EOL;
-echo "Overheated? " . ($magmar->isOverheated() ? 'Yes' : 'No') . PHP_EOL;
+cardOpen('Venusaur &nbsp;<small>GrassPokemon &rarr; Pokemon</small>', 'grass');
+cardLine($venusaur->stats(),                      'line-stats');
+cardLine($venusaur->battleCry(),                  'line-cry');
+cardLine($venusaur->attack('Magmar'),             'line-attack');
+cardLine($venusaur->useSignatureMove(),           'line-move');
+cardLine($venusaur->synthesis(),                  'line-special');
+cardLine($venusaur->releaseToxicSpores('Magmar'), 'line-special');
+cardLine($venusaur->evolve('Ivysaur'),            'line-evolve');
+cardLine($venusaur->evolutionStatus(),            'line-status');
+cardLine('Flower bloomed? ' . ($venusaur->isFlowerBloomed() ? 'Yes' : 'No'), 'line-status');
+cardClose();
+?>
 
-echo $magmar->evolve('Magby')               . PHP_EOL;
-echo $magmar->evolutionStatus()             . PHP_EOL;
+</div>
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Demo – Blastoise
-// ─────────────────────────────────────────────────────────────────────────────
-
-section('💧 BLASTOISE (WaterPokemon → Pokemon)');
-
-echo $blastoise->stats()                    . PHP_EOL;
-echo $blastoise->battleCry()               . PHP_EOL;
-echo $blastoise->attack('Charizard')        . PHP_EOL;
-echo $blastoise->useSignatureMove()         . PHP_EOL;
-echo $blastoise->dive()                     . PHP_EOL;
-echo $blastoise->rest()                     . PHP_EOL;
-
-echo $blastoise->evolve('Wartortle')        . PHP_EOL;
-echo $blastoise->evolutionStatus()          . PHP_EOL;
-echo "Cannons: " . $blastoise->getCannonCount() . PHP_EOL;
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Demo – Venusaur
-// ─────────────────────────────────────────────────────────────────────────────
-
-section('🌿 VENUSAUR (GrassPokemon → Pokemon)');
-
-echo $venusaur->stats()                       . PHP_EOL;
-echo $venusaur->battleCry()                  . PHP_EOL;
-echo $venusaur->attack('Magmar')              . PHP_EOL;
-echo $venusaur->useSignatureMove()            . PHP_EOL;
-echo $venusaur->synthesis()                   . PHP_EOL;
-echo $venusaur->releaseToxicSpores('Magmar')  . PHP_EOL;
-
-echo $venusaur->evolve('Ivysaur')             . PHP_EOL;
-echo $venusaur->evolutionStatus()             . PHP_EOL;
-echo "Flower bloomed? " . ($venusaur->isFlowerBloomed() ? 'Yes' : 'No') . PHP_EOL;
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Demo – Polymorphism: treat all as Pokemon (via Battlable interface)
-// ─────────────────────────────────────────────────────────────────────────────
-
-section('⚔️  BATTLE ROUND – Polymorphic Battlable Demo');
-
+<div class="section-label">Battle Round &mdash; Polymorphic Battlable Demo</div>
+<div class="battle-grid">
+<?php
 /** @var \Pokemon\Interfaces\Battlable[] $roster */
 $roster = [$charizard, $magmar, $blastoise, $venusaur];
+foreach ($roster as $pokemon): ?>
+    <div class="battle-card">
+        <div class="cry"><?= htmlspecialchars($pokemon->battleCry(), ENT_QUOTES, 'UTF-8') ?></div>
+        <div class="move"><?= htmlspecialchars($pokemon->useSignatureMove(), ENT_QUOTES, 'UTF-8') ?></div>
+    </div>
+<?php endforeach; ?>
+</div>
 
-foreach ($roster as $pokemon) {
-    echo $pokemon->battleCry() . PHP_EOL;
-    echo $pokemon->useSignatureMove() . PHP_EOL;
-    echo str_repeat('-', 40) . PHP_EOL;
-}
+<div class="footer">Battle complete!</div>
 
-echo PHP_EOL . "🏆  Battle complete!" . PHP_EOL . PHP_EOL;
+</body>
+</html>

@@ -19,6 +19,11 @@ class Magmar extends FirePokemon
     use Evolvable;
 
     /**
+     * @var bool Whether Magmar is currently overheated.
+     */
+    private bool $isOverheated = false;
+
+    /**
      * Magmar constructor.
      *
      * @param int  $level        The Pokémon's current level.
@@ -27,12 +32,13 @@ class Magmar extends FirePokemon
      * @param bool $isOverheated Whether Magmar is currently overheated.
      */
     public function __construct(
-        int             $level,
-        int             $hp,
-        int             $flamePower,
-        private bool    $isOverheated = false
+        int  $level,
+        int  $hp,
+        int  $flamePower,
+        bool $isOverheated = false
     ) {
         parent::__construct('Magmar', $level, $hp, $flamePower);
+        $this->isOverheated = $isOverheated;
     }
 
     /**

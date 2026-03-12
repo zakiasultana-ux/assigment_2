@@ -16,6 +16,11 @@ use Pokemon\Pokemon\Pokemon;
 abstract class WaterPokemon extends Pokemon
 {
     /**
+     * @var int The pressure of the Pokémon's water jets (1–10).
+     */
+    protected int $waterPressure;
+
+    /**
      * WaterPokemon constructor.
      *
      * @param string $name         The Pokémon's name.
@@ -24,12 +29,13 @@ abstract class WaterPokemon extends Pokemon
      * @param int    $waterPressure The pressure of the Pokémon's water jets (1–10).
      */
     public function __construct(
-        string          $name,
-        int             $level,
-        int             $hp,
-        protected int   $waterPressure
+        string $name,
+        int    $level,
+        int    $hp,
+        int    $waterPressure
     ) {
         parent::__construct($name, $level, $hp, 'Water');
+        $this->waterPressure = $waterPressure;
     }
 
     /**

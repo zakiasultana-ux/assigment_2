@@ -19,6 +19,11 @@ class Blastoise extends WaterPokemon
     use Evolvable;
 
     /**
+     * @var int The number of water cannons (usually 2).
+     */
+    private int $cannonCount = 2;
+
+    /**
      * Blastoise constructor.
      *
      * @param int $level         The Pokémon's current level.
@@ -27,12 +32,13 @@ class Blastoise extends WaterPokemon
      * @param int $cannonCount   The number of water cannons (usually 2).
      */
     public function __construct(
-        int             $level,
-        int             $hp,
-        int             $waterPressure,
-        private int     $cannonCount = 2
+        int $level,
+        int $hp,
+        int $waterPressure,
+        int $cannonCount = 2
     ) {
         parent::__construct('Blastoise', $level, $hp, $waterPressure);
+        $this->cannonCount = $cannonCount;
     }
 
     /**
